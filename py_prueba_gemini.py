@@ -2,9 +2,6 @@ import streamlit as st
 import random
 import pandas as pd
 from google import genai
-from google.genai import types
-from dotenv import load_dotenv
-import os
 
 # Inicializa el cliente de Gemini
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
@@ -161,13 +158,19 @@ st.markdown(f"""
 
 # CREAR GEMINI SOLO UNA VEZ
 if "chat" not in st.session_state:
-    st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
+    try:
+        st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
+    except Exception as e:
+        st.error(f"Error creando el chat de Gemini: {e}")
 
 # Botón explicación
 if st.button("🧠 Generar explicación"):
     prompt = f"Genera una explicación breve del refrán: \"{st.session_state.refran_seleccionado}\", y dame 1 ejemplo de uso en una frase normal"
-    response = st.session_state.chat.send_message(prompt)
-    st.session_state.historial = [("Gemini", response.text)]
+    try:
+        response = st.session_state.chat.send_message(prompt)
+        st.session_state.historial = [("Gemini", response.text)]
+    except Exception as e:
+        st.error(f"Error al generar explicación: {e}")
 
 # MOSTRAR HISTORIAL
 if "historial" in st.session_state:
@@ -182,7 +185,6 @@ if "historial" in st.session_state:
     chat_html += "</div>"
 
     st.markdown(chat_html, unsafe_allow_html=True)
-
 
     with st.form(key="chat_form", clear_on_submit=True):
         col1, col2 = st.columns([7,1])
@@ -204,8 +206,12 @@ if "historial" in st.session_state:
                 break
 
         if last_user_msg:
-            respuesta = st.session_state.chat.send_message(last_user_msg)
-            st.session_state.historial[-1] = ("Gemini", respuesta.text)
+            try:
+                respuesta = st.session_state.chat.send_message(last_user_msg)
+                st.session_state.historial[-1] = ("Gemini", respuesta.text)
+            except Exception as e:
+                st.session_state.historial[-1] = ("Gemini", "❌ Error al obtener respuesta.")
+                st.error(f"Error al enviar mensaje a Gemini: {e}")
             st.rerun()
 
 # BOTÓN NUEVO REFRÁN
@@ -214,7 +220,10 @@ if st.button("🔄 Nuevo refrán"):
 
     if not df_filtrado.empty:
         st.session_state.refran_seleccionado = random.choice(df_filtrado["refran"].dropna().tolist())
-        st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
+        try:
+            st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
+        except Exception as e:
+            st.error(f"Error al crear nuevo chat Gemini: {e}")
         st.session_state.pop("historial", None)
         st.rerun()
     else:
