@@ -2,11 +2,14 @@
 import streamlit as st
 import random
 import pandas as pd
-import google.generativeai as genai
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
 import os
 
 # Inicializa el cliente de Gemini
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
 
 # Estilo personalizado global
 st.markdown("""
@@ -126,7 +129,7 @@ def cargar_refranes(ruta_csv):
     df = pd.read_csv(ruta_csv, delimiter=";")
     return df
 
-df_refranes = cargar_refranes(r"C:\Users\teresa.mattil\OneDrive - Accenture\Desktop\refranero_español.csv")
+df_refranes = cargar_refranes("refranero_español.csv")
 
 # FILTRO DE CATEGORÍAS
 categorias_unicas = sorted(df_refranes["Categoría"].dropna().unique().tolist())
@@ -159,7 +162,7 @@ st.markdown(f"""
 
 # CREAR GEMINI SOLO UNA VEZ
 if "chat" not in st.session_state:
-    st.session_state.chat = genai.chat.create(model="gemini-2.5-flash")
+    st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
 
 # Botón explicación
 if st.button("🧠 Generar explicación"):
