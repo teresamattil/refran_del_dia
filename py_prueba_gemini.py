@@ -1,4 +1,3 @@
-#client = genai.Client(api_key="AIzaSyCHHSeMS0VsSGwO5RoWsb9ALVwomz65ODs")
 import streamlit as st
 import random
 import pandas as pd
