@@ -3,12 +3,10 @@ import streamlit as st
 import random
 import pandas as pd
 import google.generativeai as genai
-
 import os
 
 # Inicializa el cliente de Gemini
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # Estilo personalizado global
 st.markdown("""
@@ -161,7 +159,7 @@ st.markdown(f"""
 
 # CREAR GEMINI SOLO UNA VEZ
 if "chat" not in st.session_state:
-    st.session_state.chat = client.chats.create(model="gemini-2.5-flash")
+    st.session_state.chat = genai.chat.create(model="gemini-2.5-flash")
 
 # Botón explicación
 if st.button("🧠 Generar explicación"):
