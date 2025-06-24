@@ -8,9 +8,8 @@ from dotenv import load_dotenv
 import os
 
 # Inicializa el cliente de Gemini
-load_dotenv()  # Carga las variables de .env
-API_KEY = os.getenv("API_KEY")
-client = genai.Client(api_key=API_KEY)  # Reemplaza con tu API key real
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
 
 # Estilo personalizado global
 st.markdown("""
