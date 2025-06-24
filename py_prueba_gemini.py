@@ -2,9 +2,8 @@
 import streamlit as st
 import random
 import pandas as pd
-from google import genai
-from google.genai import types
-from dotenv import load_dotenv
+import google.generativeai as genai
+
 import os
 
 # Inicializa el cliente de Gemini
